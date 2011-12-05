@@ -512,9 +512,6 @@ struct dbn_index_pair {
 #define WRITES_LIST_ALLOC_FAIL			0x00008000
 #define MD_ALLOC_SECTOR_ERROR			0x00010000
 
-/* Inject a 5s delay between syncing blocks and metadata */
-#define FLASHCACHE_SYNC_REMOVE_DELAY		5000
-
 int flashcache_map(struct dm_target *ti, struct bio *bio,
 		   union map_info *map_context);
 int flashcache_ctr(struct dm_target *ti, unsigned int argc,

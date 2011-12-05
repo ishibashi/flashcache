@@ -1556,18 +1556,11 @@ flashcache_sync_for_remove(struct cache_c *dmc)
 			printk(KERN_ALERT "Fast flashcache remove Skipping cleaning of %d blocks", 
 			       dmc->nr_dirty);
 		}
-		/* 
-		 * We've prevented new cleanings from starting (for the fast remove case)
-		 * and we will wait for all in progress cleanings to exit.
-		 * Wait a few seconds for everything to quiesce before writing out the 
-		 * cache metadata.
-		 */
-		msleep(FLASHCACHE_SYNC_REMOVE_DELAY);
 		/* Wait for all the dirty blocks to get written out, and any other IOs */
 		wait_event(dmc->destroyq, !atomic_read(&dmc->nr_jobs));
 		cancel_delayed_work(&dmc->delayed_clean);
 		flush_scheduled_work();
-	} while (!dmc->sysctl_fast_remove && dmc->nr_dirty > 0);
+	} while (atomic_read(&dmc->nr_jobs) > 0 || (!dmc->sysctl_fast_remove && dmc->nr_dirty > 0));
 }
 
 static int 
