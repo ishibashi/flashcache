@@ -1787,7 +1787,7 @@ flashcache_kcopyd_callback_sync(int read_err, unsigned int write_err, void *cont
 
 /* Block sync support functions */
 static void 
-flashcache_kcopyd_callback_sync(int read_err, unsigned int write_err, void *context)
+flashcache_kcopyd_callback_sync_orig(int read_err, unsigned int write_err, void *context)
 {
 	struct kcached_job *job = (struct kcached_job *)context;
 	struct cache_c *dmc = job->dmc;
