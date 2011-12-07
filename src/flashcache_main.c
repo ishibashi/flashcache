@@ -85,7 +85,6 @@ static int flashcache_inval_blocks(struct cache_c *dmc, struct bio *bio);
 static void flashcache_dirty_writeback(struct cache_c *dmc, int index);
 void flashcache_sync_blocks(struct cache_c *dmc);
 static void flashcache_start_uncached_io(struct cache_c *dmc, struct bio *bio);
-static void flashcache_md_write_done_orig(struct kcached_job *job);
 static void flashcache_kcopyd_callback_orig(int read_err, unsigned int write_err, void *context);
 static void flashcache_kcopyd_callback_sync_orig(int read_err, unsigned int write_err, void *context);
 
@@ -743,23 +742,8 @@ flashcache_md_write_kickoff(struct kcached_job *job)
 			 flashcache_md_write_callback, orig_job);
 }
 
-/*
- * This funcion is wrapper.
- * flashcache doesn't free the resouce until all processing is completed.
- */
 void
 flashcache_md_write_done(struct kcached_job *job)
-{
-	struct cache_c *dmc = job->dmc;
-
-	atomic_inc(&dmc->nr_jobs);
-	flashcache_md_write_done_orig(job);
-	if (atomic_dec_and_test(&dmc->nr_jobs))
-		wake_up(&dmc->destroyq);
-}
-
-void
-flashcache_md_write_done_orig(struct kcached_job *job)
 {
 	struct cache_c *dmc = job->dmc;
 	struct cache_md_block_head *md_block_head;
